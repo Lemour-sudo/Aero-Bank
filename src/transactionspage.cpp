@@ -1,15 +1,15 @@
 #include "transactionspage.h"
 #include "ui_transactionspage.h"
 
-TransactionsPage::TransactionsPage(QWidget *parent, QString user_id) :
+TransactionsPage::TransactionsPage(QWidget *parent, QString accNumber) :
     QDialog(parent),
     ui(new Ui::TransactionsPage)
 {
     ui->setupUi(this);
 
     QSqlTableModel *tableModel = new QSqlTableModel(this);
-    tableModel->setTable("dbo.Transactions");
-    tableModel->setFilter("user_id = " + user_id);
+    tableModel->setTable("transaction");
+    tableModel->setFilter("account_number = " + accNumber);
     tableModel->select();
 
     ui->w5_tableView->setModel(tableModel);

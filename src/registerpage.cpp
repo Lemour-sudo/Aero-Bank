@@ -9,7 +9,6 @@ RegisterPage::RegisterPage(QWidget *parent) :
 
     ui->w3_lineName->setPlaceholderText("Your first name");
     ui->w3_lineSurname->setPlaceholderText("Your family name");
-    ui->w3_lineAge->setPlaceholderText("Enter your age");
     ui->w3_lineEmail->setPlaceholderText("Personal email address");
     ui->w3_linePass1->setPlaceholderText("case sensitive");
     ui->w3_linePass2->setPlaceholderText("case sensitive");
@@ -22,26 +21,19 @@ RegisterPage::~RegisterPage()
 
 bool RegisterPage::on_w3_pushRegister_clicked()
 {
-    QString name, surname, age, email, password1, password2, password;
+    QString name, surname, email, password1, password2, password;
     bool status;
 
     name = ui->w3_lineName->text();
     surname = ui->w3_lineSurname->text();
-    age = ui->w3_lineAge->text();
     email = ui->w3_lineEmail->text();
     password1 = ui->w3_linePass1->text();
     password2 = ui->w3_linePass2->text();
 
-    QVector<QString> strFields = {name, surname, age, email, password1, password2};
+    QVector<QString> strFields = {name, surname, email, password1, password2};
 
     QVector<QString>::const_iterator Iter =
             std::find(strFields.begin(), strFields.end(), "");
-
-    if(age.toInt() < 1)
-    {
-        QMessageBox::warning(this, "Invalid", "Invalid age entered.");
-        return FAILURE;
-    }
 
     if(Iter != strFields.end())
     {
@@ -64,13 +56,12 @@ bool RegisterPage::on_w3_pushRegister_clicked()
 
     qDebug() << "\nname:\t\t" << name <<
                 "\nsurname:\t" << surname <<
-                "\nage:\t\t" << age <<
                 "\nemail:\t\t" << email <<
                 "\npassword:\t" << password <<
                 "\n";
 
     ptrDB = new DBQueries();
-    status = ptrDB->addClient(name, surname, age.toInt(), email, password);
+    status = ptrDB->addClient(name, surname, email, password);
     if(status)
     {
         QMessageBox::information(this, "Success", "Successfully registered :)");

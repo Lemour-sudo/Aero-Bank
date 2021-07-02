@@ -2,12 +2,14 @@
 
 DBQueries::DBQueries(QObject *parent) : QObject(parent)
 {
-    QString servername = "";    // Enter your severname
-    QString dbname = "BankOfSpain";
+    QString servername = "";
+    QString dbname = "aerobank_db";
 
-    db = QSqlDatabase::addDatabase("QODBC");
-
-    db.setDatabaseName("BankDSN");
+    db = QSqlDatabase::addDatabase("QMYSQL");
+    db.setHostName("localhost");
+    db.setDatabaseName(dbname);
+    db.setUserName("");
+    db.setPassword("");
 
     if(db.open())
     {
@@ -25,41 +27,59 @@ DBQueries::~DBQueries()
     qDebug() << "\nBankOfSpain DB Closed.\n";
 }
 
-bool DBQueries::addClient(QString name, QString surname, int age, QString email, QString password)
+bool DBQueries::addClient(QString name, QString surname, QString email, QString password)
 {
-    qint64 user_id;
+    qint64 accNumber;
     QDateTime now = QDateTime::currentDateTime();
-    user_id = now.toMSecsSinceEpoch();
+    accNumber = now.toSecsSinceEpoch();
 
-    QString clientLine = "INSERT INTO [BankOfSpain].[dbo].[Clients] "
-                         "([Name], [Surname], [Age], [Email], [Password], [user_id]) "
-                         "VALUES (:name, :surname, :age,:email, :password, :user_id)";
+    QString clientLine = "INSERT INTO client "
+                         "(account_number, name, surname, email, password) "
+                         "VALUES (:accNumber, :name, :surname, :email, :password)";
     QSqlQuery clientQuery;
     clientQuery.prepare(clientLine);
+    clientQuery.bindValue(":accNumber", accNumber);
     clientQuery.bindValue(":name", name);
     clientQuery.bindValue(":surname", surname);
-    clientQuery.bindValue(":age", age);
     clientQuery.bindValue(":email", email);
     clientQuery.bindValue(":password", password);
-    clientQuery.bindValue(":user_id", user_id);
 
-    QString accLine = "INSERT INTO [BankOfSpain].[dbo].[Accounts] "
-                      "([user_id], [AccountNumber], [Cheque], [Savings]) "
-                      "VALUES (:user_id, :accNumber, :cheque, :savings)";
-    QSqlQuery accQuery;
-    accQuery.prepare(accLine);
-    accQuery.bindValue(":user_id", user_id);
-    accQuery.bindValue(":accNumber", user_id);
-    accQuery.bindValue(":cheque", 1.3);
-    accQuery.bindValue(":savings", 0.0);
-
-    if(clientQuery.exec() && accQuery.exec())
+    if(clientQuery.exec())
     {
-        qDebug() << "\nClient added to the Bank of Spain DB.\n";
+        qDebug() << "\nClient added to the AeroBank DB.\n";
     }
     else
     {
-        qDebug() << "Error = " << db.lastError().text();
+        qDebug() << clientQuery.executedQuery();
+
+        QSqlError queryError = clientQuery.lastError();
+        qDebug() << queryError;
+        if(queryError.nativeErrorCode() == "1062")
+        {
+            return "User email already registered. \nHow about a different email address?";
+        }
+
+        return FAILURE;
+    }
+
+
+    QString accLine = "INSERT INTO account "
+                      "(account_number, cheque_balance, savings_balance) "
+                      "VALUES (:accNumber, :chequeBalance, :savingsBalance)";
+    QSqlQuery accQuery;
+    accQuery.prepare(accLine);
+    accQuery.bindValue(":accNumber", accNumber);
+    accQuery.bindValue(":chequeBalance", 1.3);
+    accQuery.bindValue(":savingsBalance", 0.0);
+
+    if(accQuery.exec())
+    {
+        qDebug() << "\nClient account created and added to the AeroBank DB.\n";
+    }
+    else
+    {
+        qDebug() << accQuery.executedQuery();
+        qDebug() << accQuery.lastError();
         return FAILURE;
     }
 
@@ -68,12 +88,14 @@ bool DBQueries::addClient(QString name, QString surname, int age, QString email,
 
 QString DBQueries::verifyClient(QString username, QString password)
 {
-    QString user_id;
+    QString clientName;
+    QString accNumber;
 
     QSqlQueryModel *queryModel = new QSqlQueryModel;
 
-    QString queryLine = QString("SELECT * FROM [BankOfSpain].[dbo].[Clients] "
-                                "WHERE Name = '%1'").arg(username);
+    QString queryLine = QString("SELECT * FROM client "
+                                "WHERE Name = '%1' "
+                                "LIMIT 1").arg(username);
 
     queryModel->setQuery(queryLine); //select the row of where the Name == username
 
@@ -81,14 +103,13 @@ QString DBQueries::verifyClient(QString username, QString password)
     ptrCrypt->setKey(0x0c2ad4a4acb9f023);
     if(ptrCrypt->decryptToString(queryModel->record(0).value(4).toString()) == password)
     {
-        user_id = queryModel->record(0).value(5).toString();
-        return user_id;
+        accNumber = queryModel->record(0).value(0).toString();
+        return accNumber;
     }
-
     return "";
 }
 
-QVector<float> DBQueries::transact(QString action, QString user_id, int accType, float amount)
+QVector<float> DBQueries::transact(QString action, QString accNumber, int accType, float amount)
 {
     float chequeBal = 0.0;
     float savingsBal = 0.0;
@@ -98,20 +119,18 @@ QVector<float> DBQueries::transact(QString action, QString user_id, int accType,
     float savingsDeposit = 0.0, savingsWithdrawal = 0.0;
 
     QDateTime timeNow = QDateTime::currentDateTime();
-    QString strTimeNow = timeNow.toString("dd.MM.yyyy hh:mm:ss");
 
     QSqlQueryModel *queryModel = new QSqlQueryModel;
-    QString balQuery = QString("SELECT * FROM [BankOfSpain].[dbo].Accounts "
-                               "WHERE user_id = '%1'").arg(user_id);
+    QString balQuery = QString("SELECT * FROM account "
+                               "WHERE account_number = '%1'").arg(accNumber);
     queryModel->setQuery(balQuery);
 
-    chequeBal = queryModel->record(0).value(2).toFloat();
-    savingsBal = queryModel->record(0).value(3).toFloat();
+    chequeBal = queryModel->record(0).value(1).toFloat();
+    savingsBal = queryModel->record(0).value(2).toFloat();
 
 
-    QString updateQuery;
-    QString saveQuery;
-
+    // Query to account table
+    QSqlQuery updateAccountQuery;
 
     if(accType == 0)
     {
@@ -124,7 +143,7 @@ QVector<float> DBQueries::transact(QString action, QString user_id, int accType,
             return {chequeBal, savingsBal};
         }
 
-        // Set Transaction data
+        // Set transaction data
         if(action == "deposit")
         {
             chequeDeposit = amount;
@@ -134,10 +153,14 @@ QVector<float> DBQueries::transact(QString action, QString user_id, int accType,
             chequeWithdrawal = amount;
         }
 
-        // Set query to Accounts table
-        updateQuery = QString("UPDATE [BankOfSpain].[dbo].[Accounts] "
-                              "SET [Cheque] = %1 WHERE user_id = %2").arg(
-                    QString::number(chequeBal), user_id);
+        // Set query to update account table
+        updateAccountQuery.prepare(
+            "UPDATE account "
+            "SET cheque_balance = :chequeBal "
+            "WHERE account_number = :accNumber"
+        );
+        updateAccountQuery.bindValue(":chequeBal", chequeBal);
+        updateAccountQuery.bindValue(":accNumber", accNumber);
     }
     else if(accType == 1)
     {
@@ -160,12 +183,14 @@ QVector<float> DBQueries::transact(QString action, QString user_id, int accType,
             savingsWithdrawal = amount;
         }
 
-
-
-        // Set query to Accounts table
-        updateQuery = QString("UPDATE [BankOfSpain].[dbo].[Accounts] "
-                              "SET [Savings] = %1 WHERE user_id = %2").arg(
-                    QString::number(savingsBal), user_id);
+        // Set query to update account table
+        updateAccountQuery.prepare(
+            "UPDATE account "
+            "SET savings_balance = :savingsBal "
+            "WHERE account_number = :accNumber"
+        );
+        updateAccountQuery.bindValue(":savingsBal", savingsBal);
+        updateAccountQuery.bindValue(":accNumber", accNumber);
     }
     else if(accType == 2)
     {
@@ -179,7 +204,7 @@ QVector<float> DBQueries::transact(QString action, QString user_id, int accType,
             return {chequeBal, savingsBal};
         }
 
-        // Set Transaction data
+        // Set transaction data
         if(action == "deposit")
         {
             savingsDeposit = amount;
@@ -191,35 +216,63 @@ QVector<float> DBQueries::transact(QString action, QString user_id, int accType,
             chequeWithdrawal = amount;
         }
 
-        // Set query to Accounts table
-        updateQuery = QString("UPDATE [BankOfSpain].[dbo].[Accounts] "
-                              "SET [Cheque] = %1 , [Savings] = %2 WHERE user_id = %3").arg(
-                    QString::number(chequeBal), QString::number(savingsBal), user_id);
+        // Set query to update account table
+        updateAccountQuery.prepare(
+            "UPDATE account "
+            "SET cheque_balance = :chequeBal , savings_balance = :savingsBal "
+            "WHERE account_number = :accNumber"
+        );
+        updateAccountQuery.bindValue(":chequeBal", chequeBal);
+        updateAccountQuery.bindValue(":savingsBal", savingsBal);
+        updateAccountQuery.bindValue(":accNumber", accNumber);
     }
 
-    // Set query to Transactions table
-    saveQuery = QString("INSERT INTO [BankOfSpain].[dbo].[Transactions] "
-                "([user_id], [ChequeDeposit], [ChequeWithdrawal], [ChequeBalance], "
-                "[SavingsDeposit], [SavingsWithdrawal], [SavingsBalance], [DateTime]) "
-                "VALUES ( %1, %2, %3, %4, %5, %6, %7, '%8' )").arg(
-                user_id, QString::number(chequeDeposit),
-                QString::number(chequeWithdrawal), QString::number(chequeBal),
-                QString::number(savingsDeposit), QString::number(savingsWithdrawal),
-                QString::number(savingsBal), strTimeNow);
+    // Update account table
+    if(!updateAccountQuery.exec())
+    {
+        qDebug() << updateAccountQuery.lastError();
+    }
 
-    queryModel->setQuery(updateQuery); // update Accounts table
-    queryModel->setQuery(saveQuery); // update Transactions table
+    
+    // Set query to save into transaction table
+    QSqlQuery saveTransacQuery;
+    saveTransacQuery.prepare(
+        "INSERT INTO transaction "
+        "(account_number, cheque_deposit, cheque_withdrawal, cheque_balance, "
+        "savings_deposit, savings_withdrawal, savings_balance, date_time) "
+        "VALUES ( :accNumber, :chequeDeposit, :chequeWithdrawal, :chequeBal, "
+        ":savingsDeposit, :savingsWithdrawal, :savingsBal, :strTimeNow )"
+    );
+    saveTransacQuery.bindValue(":accNumber", accNumber);
+    saveTransacQuery.bindValue(":chequeDeposit", QString::number(chequeDeposit));
+    saveTransacQuery.bindValue(":chequeWithdrawal", QString::number(chequeWithdrawal));
+    saveTransacQuery.bindValue(":chequeBal", QString::number(chequeBal));
+    saveTransacQuery.bindValue(":savingsDeposit", QString::number(savingsDeposit));
+    saveTransacQuery.bindValue(":savingsWithdrawal", QString::number(savingsWithdrawal));
+    saveTransacQuery.bindValue(":savingsBal", QString::number(savingsBal));
+    saveTransacQuery.bindValue(":strTimeNow", timeNow);
+
+    // Update transaction table
+    if(!saveTransacQuery.exec())
+    {
+        qDebug() << saveTransacQuery.lastError();
+    }
 
     return {chequeBal, savingsBal};
 }
 
-bool DBQueries::exportTransac(QString user_id, QString filename)
+bool DBQueries::exportTransac(QString accNumber, QString filename)
 {
     QSqlQueryModel *model = new QSqlQueryModel;
 
-    QString myQuery = "SELECT * FROM [BankOfSpain].[dbo].[Transactions] WHERE user_id = " + user_id;
+    QString transacQuery = "SELECT * FROM transaction WHERE account_number = " + accNumber;
 
-    model->setQuery(myQuery);
+    model->setQuery(transacQuery);
+
+    if(!model->lastError().NoError)
+    {
+        qDebug() << model->lastError();
+    }
 
     // Collect model data to QString
     QString textData;

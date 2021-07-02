@@ -20,19 +20,19 @@ void LoginPage::on_w2_pushLogin_clicked()
 {
     // Login
 
-    QString username, password, user_id;
+    QString username, password, accNumber;
 
     username = ui->w2_lineName->text();
 
     password = ui->w2_linePass->text();
 
     ptrDB = new DBQueries();
-    user_id = ptrDB->verifyClient(username, password);
-    if(user_id != "")
+    accNumber = ptrDB->verifyClient(username, password);
+    if(accNumber != "")
     {
         QMessageBox::information(this, "Login Feed", "Login Success");
 
-        ptrBank = new BankingPage(this, username, user_id);
+        ptrBank = new BankingPage(this, username, accNumber);
         ptrBank->setWindowTitle("Bank of Spain");
         ptrBank->show();
 

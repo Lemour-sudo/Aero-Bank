@@ -76,7 +76,7 @@ private:
 
     QString username;
 
-    QString user_id;
+    QString accNumber;
 
     DBQueries *ptrDB;
 

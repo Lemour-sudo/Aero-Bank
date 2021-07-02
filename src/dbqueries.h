@@ -36,12 +36,11 @@ public:
      * @brief Adds new client information to database along with unique user-id and Savings and Cheque accounts.
      * @param name
      * @param surname
-     * @param age: assumed to be positive integer
      * @param email
      * @param password
      * @return feedback whether operation was successful or unsuccessful.
      */
-    bool addClient(QString name, QString surname, int age, QString email, QString password);
+    bool addClient(QString name, QString surname, QString email, QString password);
 
     /**
      * @brief Check whether queried user exists and whether password is correct at user login.
@@ -54,20 +53,20 @@ public:
     /**
      * @brief Applies the queried transaction to the database.
      * @param action: transaction type; deposit or withdraw
-     * @param user_id
+     * @param accNumber
      * @param accType: account type; Cheque account or Savings account
      * @param amount: assumed to be a positive float
      * @return {chequeBal, savingsBal}: vector of Cheque Balance and Savings Balance
      */
-    QVector<float> transact(QString action, QString user_id, int accType, float amount);
+    QVector<float> transact(QString action, QString accNumber, int accType, float amount);
 
     /**
      * @brief Write queried user's transactions into text file.
-     * @param user_id
+     * @param accNumber
      * @param filename: string path directory
      * @return
      */
-    bool exportTransac(QString user_id, QString filename);
+    bool exportTransac(QString accNumber, QString filename);
 
     /**
      * @brief Destructor: closes database.

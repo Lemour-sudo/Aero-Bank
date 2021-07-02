@@ -19,9 +19,9 @@ public:
     /**
      * @brief Constructor: displays window and components from the ui.
      * @param parent
-     * @param user_id
+     * @param accNumber
      */
-    explicit TransactionsPage(QWidget *parent = nullptr, QString user_id = "");
+    explicit TransactionsPage(QWidget *parent = nullptr, QString accNumber = "");
 
     /**
       * @brief Destructor: deletes the ui pointer.

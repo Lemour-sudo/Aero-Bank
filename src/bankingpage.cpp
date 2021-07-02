@@ -9,10 +9,10 @@ BankingPage::BankingPage(QWidget *parent, QString name, QString iden) :
     ui->setupUi(this);
 
     this->username = name;
-    this->user_id = iden;
+    this->accNumber = iden;
 
     ui->w4_labelTitle->setText(QString("Hello <i><b>%1</b></i>").arg(username));
-    ui->w4_labelTitle_2->setText(QString("ID: %1").arg(user_id));
+    ui->w4_labelTitle_2->setText(QString("ID: %1").arg(accNumber));
 
     ui->w4_lineAmount->setValidator(new QDoubleValidator(0, 100000000, 2, this));
 
@@ -71,7 +71,7 @@ bool BankingPage::on_w4_pushTransact_clicked()
 
     amount = ui->w4_lineAmount->text().toFloat();
 
-    balances = ptrDB->transact(action, user_id, accType, amount);
+    balances = ptrDB->transact(action, accNumber, accType, amount);
 
     feedbackTransact(balances);
 
@@ -82,7 +82,7 @@ bool BankingPage::on_w4_pushTransact_clicked()
 
 void BankingPage::on_w4_pushCheck_clicked()
 {
-    ptrTransac = new TransactionsPage(this, user_id);
+    ptrTransac = new TransactionsPage(this, accNumber);
     ptrTransac->setWindowTitle("Transactions");
     ptrTransac->show();
 }
@@ -129,7 +129,7 @@ void BankingPage::on_actionPrint_Statement_triggered()
     QString code = QString::number(now.toMSecsSinceEpoch() % 10000);
     QString filename = filepath + "/statement_" + code + ".csv";
 
-    if(ptrDB->exportTransac(user_id, filename))
+    if(ptrDB->exportTransac(accNumber, filename))
     {
         QMessageBox::information(this, "Print Report", "Report successfully printed");
     }
