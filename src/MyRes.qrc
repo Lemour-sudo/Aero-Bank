@@ -4,4 +4,7 @@
         <file>Media/gold.png</file>
         <file>Media/server.png</file>
     </qresource>
+    <qresource prefix="/files">
+        <file>configs/config.ini</file>
+    </qresource>
 </RCC>

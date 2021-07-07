@@ -2,18 +2,22 @@
 
 DBQueries::DBQueries(QObject *parent) : QObject(parent)
 {
-    QString servername = "";
+    QSettings settings(QString(":/files/configs/config.ini"), QSettings::IniFormat);
+    QString hostName = settings.value("database/host_name").toString();
+    QString userName = settings.value("database/user_name").toString();
+    QString password = settings.value("database/password").toString();
+
     QString dbname = "aerobank_db";
 
     db = QSqlDatabase::addDatabase("QMYSQL");
-    db.setHostName("localhost");
+    db.setHostName(hostName);
     db.setDatabaseName(dbname);
-    db.setUserName("");
-    db.setPassword("");
+    db.setUserName(userName);
+    db.setPassword(password);
 
     if(db.open())
     {
-        qDebug() << "\nBankOfSpain DB Opened!\n";
+        qDebug() << "\nAeroBank DB Opened!\n";
     }
     else
     {
@@ -24,7 +28,7 @@ DBQueries::DBQueries(QObject *parent) : QObject(parent)
 DBQueries::~DBQueries()
 {
     db.close();
-    qDebug() << "\nBankOfSpain DB Closed.\n";
+    qDebug() << "\nAeroBank DB Closed.\n";
 }
 
 bool DBQueries::addClient(QString name, QString surname, QString email, QString password)
