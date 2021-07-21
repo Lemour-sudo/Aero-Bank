@@ -5,7 +5,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    this->setWindowTitle("Welcome to BB");
+    this->setWindowTitle("Welcome");
     ui->setupUi(this);
 
     ui->w1_pushLogin->setToolTip("<font color='gray'>Logging in</font>");

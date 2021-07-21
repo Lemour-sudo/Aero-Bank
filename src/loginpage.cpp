@@ -7,7 +7,7 @@ LoginPage::LoginPage(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->w2_lineName->setPlaceholderText("Enter your first name");
+    ui->w2_lineName->setPlaceholderText("Enter your email");
     ui->w2_linePass->setPlaceholderText("case sensitive");
 }
 
@@ -33,7 +33,7 @@ void LoginPage::on_w2_pushLogin_clicked()
         QMessageBox::information(this, "Login Feed", "Login Success");
 
         ptrBank = new BankingPage(this, username, accNumber);
-        ptrBank->setWindowTitle("Bank of Spain");
+        ptrBank->setWindowTitle("AeroBank");
         ptrBank->show();
 
         close();

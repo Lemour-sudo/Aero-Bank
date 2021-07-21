@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     a.setStyleSheet(styleSheet);
 
     MainWindow w;
-    w.setWindowTitle("Start");
+    w.setWindowTitle("Welcome");
     w.show();
     return a.exec();
 }

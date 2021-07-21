@@ -150,12 +150,11 @@ QLineEdit
 /*-----QListView-----*/
 QListView{
 	background-color: transparent;
-	font-size: 12pt;
+	font-size: 10pt;
 	border: none;
 	color: #fff;
 	show-decoration-selected: 0;
 	padding-left: px;
-
 }
 
 QListView::item:selected{

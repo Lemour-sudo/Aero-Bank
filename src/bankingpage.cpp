@@ -15,7 +15,7 @@ BankingPage::BankingPage(QWidget *parent, QString name, QString iden) :
     ui->verticalLayout_3->setContentsMargins(50, 0, 50, 0);
     ui->verticalLayout_5->setContentsMargins(50, 0, 50, 0);
 
-    ui->w4_labelTitle_1->setText(QString("Hello <i><b>%1</b></i>").arg(username));
+    ui->w4_labelTitle_1->setText(QString("Hello <i style='color:blue;'><b>%1</b></i>").arg(username));
     ui->w4_labelTitle_2->setText(QString("ID: %1").arg(accNumber));
 
     ui->w4_lineAmount->setValidator(new QDoubleValidator(0, 100000000, 2, this));
