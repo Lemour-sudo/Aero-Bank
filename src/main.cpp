@@ -6,7 +6,7 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
 
     // Stylesheet
-    QFile styleSheetFile("./Perstfic.qss");
+    QFile styleSheetFile(":/files/styles/Perstfic.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     a.setStyleSheet(styleSheet);
