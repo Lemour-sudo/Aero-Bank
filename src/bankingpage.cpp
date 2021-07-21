@@ -11,7 +11,7 @@ BankingPage::BankingPage(QWidget *parent, QString name, QString iden) :
     this->username = name;
     this->accNumber = iden;
 
-    ui->w4_labelTitle->setText(QString("Hello <i><b>%1</b></i>").arg(username));
+    ui->w4_labelTitle_1->setText(QString("Hello <i><b>%1</b></i>").arg(username));
     ui->w4_labelTitle_2->setText(QString("ID: %1").arg(accNumber));
 
     ui->w4_lineAmount->setValidator(new QDoubleValidator(0, 100000000, 2, this));

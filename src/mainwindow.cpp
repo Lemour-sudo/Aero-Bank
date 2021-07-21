@@ -10,9 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->w1_pushLogin->setToolTip("<font color='gray'>Logging in</font>");
     ui->w1_pushRegister->setToolTip("<font color='gray'>Sign up</font>");
-    ui->w1_labelBankName->setToolTip("<img src=':/images/Media/gold.png'>");
 
-    ui->w1_labelBankName->setText("<p style='font-family:Brush Script MT'><font color='#DAA520'>Welcome to the Bank of Spain</p>");
+    ui->w1_labelBankName->setText("<p style='font-family:Brush Script MT'><font color='#fff'>Welcome to AeroBank</p>");
 
 }
 

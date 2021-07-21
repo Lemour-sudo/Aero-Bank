@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/images">
         <file>Media/print.png</file>
-        <file>Media/gold.png</file>
         <file>Media/server.png</file>
     </qresource>
     <qresource prefix="/files">
