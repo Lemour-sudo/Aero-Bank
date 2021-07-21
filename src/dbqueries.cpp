@@ -31,6 +31,13 @@ DBQueries::~DBQueries()
     qDebug() << "\nAeroBank DB Closed.\n";
 }
 
+bool DBQueries::closeDB()
+{
+    db.close();
+    qDebug() << "\nAeroBank DB Closed.\n";
+    return 0;
+}
+
 bool DBQueries::addClient(QString name, QString surname, QString email, QString password)
 {
     qint64 accNumber;

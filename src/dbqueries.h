@@ -33,6 +33,13 @@ public:
     explicit DBQueries(QObject *parent = nullptr);
 
     /**
+     * @brief Closes database connection.
+     * @return 0
+     */
+    bool closeDB();
+
+
+    /**
      * @brief Adds new client information to database along with unique user-id and Savings and Cheque accounts.
      * @param name
      * @param surname

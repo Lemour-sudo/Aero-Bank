@@ -2,6 +2,7 @@
 #define DIALOG_H
 
 #include <QDialog>
+#include "dbqueries.h"
 
 /**
  * This is the leave window displayed after the user logs out.
@@ -16,6 +17,9 @@ public:
      * @param parent
      */
     explicit ByePage(QWidget *parent = 0);
+
+private:
+    DBQueries *ptrDB;
 };
 
 #endif

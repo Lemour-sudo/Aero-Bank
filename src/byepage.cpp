@@ -14,4 +14,7 @@ ByePage::ByePage(QWidget *parent)
 
     setWindowTitle(tr("Wiggly"));
     resize(360, 145);
+
+    ptrDB = new DBQueries();
+    ptrDB->closeDB();
 }
