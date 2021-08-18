@@ -105,7 +105,7 @@ QString DBQueries::verifyClient(QString username, QString password)
     QSqlQueryModel *queryModel = new QSqlQueryModel;
 
     QString queryLine = QString("SELECT * FROM client "
-                                "WHERE Name = '%1' "
+                                "WHERE email = '%1' "
                                 "LIMIT 1").arg(username);
 
     queryModel->setQuery(queryLine); //select the row of where the Name == username
