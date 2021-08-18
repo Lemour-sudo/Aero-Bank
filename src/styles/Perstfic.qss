@@ -154,7 +154,7 @@ QListView{
 	border: none;
 	color: #fff;
 	show-decoration-selected: 0;
-	padding-left: px;
+	padding: 0 50px;
 }
 
 QListView::item:selected{
