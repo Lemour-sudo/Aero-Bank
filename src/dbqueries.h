@@ -47,7 +47,7 @@ public:
      * @param password
      * @return feedback whether operation was successful or unsuccessful.
      */
-    bool addClient(QString name, QString surname, QString email, QString password);
+    QVector<QString> addClient(QString name, QString surname, QString email, QString password);
 
     /**
      * @brief Check whether queried user exists and whether password is correct at user login.

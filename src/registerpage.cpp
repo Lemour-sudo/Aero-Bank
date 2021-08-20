@@ -22,7 +22,7 @@ RegisterPage::~RegisterPage()
 bool RegisterPage::on_w3_pushRegister_clicked()
 {
     QString name, surname, email, password1, password2, password;
-    bool status;
+    QVector<QString> dbOut;
 
     name = ui->w3_lineName->text();
     surname = ui->w3_lineSurname->text();
@@ -61,14 +61,14 @@ bool RegisterPage::on_w3_pushRegister_clicked()
                 "\n";
 
     ptrDB = new DBQueries();
-    status = ptrDB->addClient(name, surname, email, password);
-    if(status)
+    dbOut = ptrDB->addClient(name, surname, email, password);
+    if(dbOut[0] == "success")
     {
         QMessageBox::information(this, "Success", "Successfully registered :)");
     }
     else
     {
-        QMessageBox::warning(this, "Failure", "Sorry, registration failed. Please try again later :(");
+        QMessageBox::warning(this, "Failure", dbOut[1]);
         return FAILURE;
     }
 

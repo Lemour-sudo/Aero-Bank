@@ -38,7 +38,7 @@ bool DBQueries::closeDB()
     return 0;
 }
 
-bool DBQueries::addClient(QString name, QString surname, QString email, QString password)
+QVector<QString> DBQueries::addClient(QString name, QString surname, QString email, QString password)
 {
     qint64 accNumber;
     QDateTime now = QDateTime::currentDateTime();
@@ -67,10 +67,10 @@ bool DBQueries::addClient(QString name, QString surname, QString email, QString 
         qDebug() << queryError;
         if(queryError.nativeErrorCode() == "1062")
         {
-            return "User email already registered. \nHow about a different email address?";
+            return {"failure", "User email already registered."};
         }
 
-        return FAILURE;
+        return {"failure", "The backend engineers have not figured this one yet."};
     }
 
 
@@ -91,10 +91,10 @@ bool DBQueries::addClient(QString name, QString surname, QString email, QString 
     {
         qDebug() << accQuery.executedQuery();
         qDebug() << accQuery.lastError();
-        return FAILURE;
+        return {"failure", "Client account created and added to the AeroBank DB."};
     }
 
-    return SUCCESS;
+    return {"success", "Client successfully added."};
 }
 
 QString DBQueries::verifyClient(QString username, QString password)
