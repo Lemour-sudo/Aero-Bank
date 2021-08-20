@@ -91,7 +91,7 @@ private:
      * @param action
      * @return
      */
-    float execTrasac(float balance, float update, QString action);
+    float execTransac(float balance, float update, QString action);
 
     SimpleCrypt *ptrCrypt;
 

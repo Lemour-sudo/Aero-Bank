@@ -148,7 +148,7 @@ QVector<float> DBQueries::transact(QString action, QString accNumber, int accTyp
         /* Update Cheque Account */
 
         // Calculate and check balance
-        chequeBal = execTrasac(chequeBal, amount, action);
+        chequeBal = execTransac(chequeBal, amount, action);
         if(chequeBal < minimumBal)
         {
             return {chequeBal, savingsBal};
@@ -178,7 +178,7 @@ QVector<float> DBQueries::transact(QString action, QString accNumber, int accTyp
         /* Update Savings Account */
 
         // Calculate and check balance
-        savingsBal = execTrasac(savingsBal, amount, action);
+        savingsBal = execTransac(savingsBal, amount, action);
         if(savingsBal < minimumBal)
         {
             return {chequeBal, savingsBal};
@@ -208,8 +208,8 @@ QVector<float> DBQueries::transact(QString action, QString accNumber, int accTyp
         /* Update both Cheque and Savings Accounts */
 
         // Calculate and check balance
-        chequeBal = execTrasac(chequeBal, amount, action);
-        savingsBal = execTrasac(savingsBal, amount, action);
+        chequeBal = execTransac(chequeBal, amount, action);
+        savingsBal = execTransac(savingsBal, amount, action);
         if((chequeBal < minimumBal) || (savingsBal < minimumBal))
         {
             return {chequeBal, savingsBal};
@@ -316,7 +316,7 @@ bool DBQueries::exportTransac(QString accNumber, QString filename)
 }
 
 
-float DBQueries::execTrasac(float balance, float update, QString action)
+float DBQueries::execTransac(float balance, float update, QString action)
 {
     if(action == "deposit")
     {
