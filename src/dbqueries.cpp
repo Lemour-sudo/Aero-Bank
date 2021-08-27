@@ -91,7 +91,7 @@ QVector<QString> DBQueries::addClient(QString name, QString surname, QString ema
     {
         qDebug() << accQuery.executedQuery();
         qDebug() << accQuery.lastError();
-        return {"failure", "Client account created and added to the AeroBank DB."};
+        return {"failure", "The backend engineers have not figured this one yet."};
     }
 
     return {"success", "Client successfully added."};
