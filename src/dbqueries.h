@@ -55,7 +55,7 @@ public:
      * @param password
      * @return user_id: return user_id if credentials are correct otherwise return empty string.
      */
-    QString verifyClient(QString username, QString password);
+    QVector<QString> verifyClient(QString username, QString password);
 
     /**
      * @brief Applies the queried transaction to the database.

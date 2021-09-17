@@ -97,7 +97,7 @@ QVector<QString> DBQueries::addClient(QString name, QString surname, QString ema
     return {"success", "Client successfully added."};
 }
 
-QString DBQueries::verifyClient(QString username, QString password)
+QVector<QString> DBQueries::verifyClient(QString username, QString password)
 {
     QString clientName;
     QString accNumber;
@@ -115,9 +115,10 @@ QString DBQueries::verifyClient(QString username, QString password)
     if(ptrCrypt->decryptToString(queryModel->record(0).value(4).toString()) == password)
     {
         accNumber = queryModel->record(0).value(0).toString();
-        return accNumber;
+        clientName = queryModel->record(0).value(1).toString();
+        return {accNumber, clientName};
     }
-    return "";
+    return {"", ""};
 }
 
 QVector<float> DBQueries::transact(QString action, QString accNumber, int accType, float amount)

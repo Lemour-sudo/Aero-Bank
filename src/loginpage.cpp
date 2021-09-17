@@ -20,19 +20,22 @@ void LoginPage::on_w2_pushLogin_clicked()
 {
     // Login
 
-    QString username, password, accNumber;
+    QString email, password, accNumber, clientName;
+    QVector<QString> userDetails;
 
-    username = ui->w2_lineName->text();
+    email = ui->w2_lineName->text();
 
     password = ui->w2_linePass->text();
 
     ptrDB = new DBQueries();
-    accNumber = ptrDB->verifyClient(username, password);
+    userDetails = ptrDB->verifyClient(email, password);
+    accNumber = userDetails[0];
+    clientName = userDetails[1];
     if(accNumber != "")
     {
         QMessageBox::information(this, "Login Feed", "Login Success");
 
-        ptrBank = new BankingPage(this, username, accNumber);
+        ptrBank = new BankingPage(this, clientName, accNumber);
         ptrBank->setWindowTitle("AeroBank");
         ptrBank->show();
 
